@@ -1,16 +1,20 @@
 package com.study.springstudy.board.entity;
 
+import com.study.springstudy.board.dto.BoardRequestDto;
 import com.study.springstudy.board.dto.BoardResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+//@Setter
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "board")
 @Builder
@@ -33,11 +37,18 @@ public class BoardEntity {
     private String password; // 비밀번호
 
     @Column(updatable = false)
+    @CreatedDate
     private LocalDateTime createdDate; // 작성날짜
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdDate = LocalDateTime.now();
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdDate = LocalDateTime.now();
+//    }
+
+    public void update(BoardRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.writer = requestDto.getWriter();
     }
 
 
