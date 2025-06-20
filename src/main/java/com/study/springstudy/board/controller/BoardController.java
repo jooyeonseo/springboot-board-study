@@ -1,5 +1,6 @@
 package com.study.springstudy.board.controller;
 
+import com.study.springstudy.board.dto.ApiResponseDto;
 import com.study.springstudy.board.dto.BoardRequestDto;
 import com.study.springstudy.board.dto.BoardResponseDto;
 import com.study.springstudy.board.service.BoardService;
@@ -49,9 +50,9 @@ public class BoardController {
 
     // 게시글 삭제
     @DeleteMapping("/api/post/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable Long id, @RequestBody @Valid BoardRequestDto boardRequestDto) {
+    public ResponseEntity<ApiResponseDto<Void>> deletePost(@PathVariable Long id, @RequestBody @Valid BoardRequestDto boardRequestDto) {
         boardService.deletePost(id,boardRequestDto);
-        return ResponseEntity.ok("삭제완료");
+        return ResponseEntity.ok(new ApiResponseDto<>("삭제 완료", 200, null));
     }
 
 }
