@@ -39,7 +39,7 @@ public class BoardService {
 
     // 선택 게시글 조회
     public BoardResponseDto getPostById(Long id) {
-        BoardEntity foundEntity = boardRepository.findById(id).orElseThrow(()->new RuntimeException("게시글이 존재하지 않습니다."));
+        BoardEntity foundEntity = findPost(id);
         return foundEntity.toDto();
     }
 
@@ -47,12 +47,9 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updatePost(Long id, BoardRequestDto boardRequestDto) {
 
-        BoardEntity foundEntity = boardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+        BoardEntity foundEntity =findPost(id);
 
-        if(!foundEntity.getPassword().equals(boardRequestDto.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
-        }
+        validatePassword(foundEntity, boardRequestDto.getPassword());
         foundEntity.update(boardRequestDto);
 
         return foundEntity.toDto();
@@ -62,14 +59,21 @@ public class BoardService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id, BoardRequestDto boardRequestDto) {
-        BoardEntity foundEntity = boardRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("게시글이 존재하지 않습니다."));
+        BoardEntity foundEntity =findPost(id);
 
-        if(!foundEntity.getPassword().equals(boardRequestDto.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
-        }
+        validatePassword(foundEntity, boardRequestDto.getPassword());
 
         boardRepository.delete(foundEntity);
+    }
+
+    private BoardEntity findPost(Long id) {
+        return boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    }
+
+    private void validatePassword(BoardEntity boardEntity, String password) {
+                if(!boardEntity.getPassword().equals(password)) {
+                    throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. ");
+                }
     }
 
 
